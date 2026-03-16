@@ -1,70 +1,117 @@
-Divide & Conquer Energy Project
-MergeSort vs QuickSort karşılaştırması: zaman, işlem sayacı (comparisons/assignments), proxy enerji metriği ve CodeCarbon tahmini enerji/karbon çıktıları. Ayrıca deneyleri çalıştırmak için Streamlit GUI içerir.
+# Divide & Conquer Energy Project
 
-## Amaç
-Bu projede Divide & Conquer tabanlı iki sıralama algoritması (MergeSort ve QuickSort) farklı giriş koşullarında karşılaştırılmıştır:
+This project compares two Divide & Conquer sorting algorithms: **MergeSort** and **QuickSort**.  
+The goal is to analyze their performance not only in terms of runtime but also by counting the operations performed during execution. These operation counts are used to estimate an approximate **energy proxy metric**. The project also includes a **Streamlit GUI**, which allows experiments to be run interactively.
 
-- Çalışma süresi (avg_time_ms)
-- Karşılaştırma sayısı (avg_comp)
-- Atama / swap sayısı (avg_assign)
-- Proxy enerji metriği: energy_proxy = avg_comp + avg_assign
-- (Opsiyonel) CodeCarbon ile tahmini energy_joule ve emissions_kg
+## Purpose
 
-Not: energy_proxy gerçek Joule ölçümü değildir; algoritmaların yaptığı işlem sayıları üzerinden hesaplanan yaklaşık (proxy) bir enerji metriğidir. CodeCarbon ise donanımdan doğrudan ölçüm yapmaz; tahmini enerji/karbon değerleri üretir.
+The main purpose of this project is to compare MergeSort and QuickSort under different input conditions and analyze how their behavior changes. The following metrics are measured during the experiments:
 
-## Deney Senaryoları (mode)
-- random: Rastgele veri (ortalama duruma yakın)
-- sorted: Önceden sıralı veri (özel durum davranışını görürsün)
-- reversed: Ters sıralı veri (stres testi / kötü duruma yakın)
+- **Execution time (avg_time_ms)** – how long the algorithm takes to run.
+- **Number of comparisons (avg_comp)** – how many comparisons the algorithm performs.
+- **Number of assignments / swaps (avg_assign)** – how many data movements occur.
+- **Energy proxy metric** – an approximate measure of computational work.
 
-## Proje Yapısı
-- algorithms.py  
-  Sayaçlı MergeSort ve iteratif (recursion’sız) sayaçlı QuickSort + veri üretici.
-- benchmark.py  
-  Farklı n ve mode kombinasyonlarında deneyleri çalıştırır, tablo çıktısı üretir.
-- gui_app.py  
-  Streamlit arayüzü: seçilen n, mode, repetitions ile deneyi çalıştırır ve grafikleri gösterir.
+The energy proxy is calculated using the following formula:
 
-## Kurulum ve Çalıştırma (adım adım)
-1) Terminali aç ve proje klasörüne geç:  
-```bash
-cd /Users/nursenakay/Desktop/divide-and-conquer-energy-project
-```
+energy_proxy = comparisons + assignments
 
-2) (Önerilen) Sanal ortamı kur ve etkinleştir:  
-```bash
-python3 -m venv .venv
+*Note:* This value is **not a real measurement of electrical energy**. It is only an approximate indicator of how much work the algorithm performs. The project can also optionally estimate energy consumption and carbon emissions using the **CodeCarbon** library. CodeCarbon does not directly measure hardware power usage; it provides estimated values.
+
+## Experiment Scenarios
+
+To better observe algorithm behavior, the experiments are performed using three different dataset types:
+
+- **random** – randomly generated data (represents average-case conditions)
+- **sorted** – already sorted data (used to observe special-case behavior)
+- **reversed** – reverse sorted data (used as a stress test and near worst-case scenario)
+
+Testing with different data patterns helps demonstrate how algorithms react to different input conditions.
+
+## Project Structure
+
+The project contains three main Python files:
+
+- **algorithms.py**  
+  Implements MergeSort and an **iterative QuickSort** algorithm.  
+  It also contains operation counters and a dataset generator.
+
+- **benchmark.py**  
+  Runs experiments using different input sizes and dataset modes.  
+  It measures runtime, operation counts, and energy proxy values, then prints the results in a table.
+
+- **gui_app.py**  
+  Provides a **Streamlit-based graphical interface**.  
+  Users can select parameters such as dataset size, data mode, and number of repetitions, then visualize the results with graphs.
+
+## Installation and Running
+
+Follow these steps to run the project.
+
+### 1. Open the terminal and go to the project directory
+
+cd /Users/your_username/Desktop/divide-and-conquer-energy-project
+
+*(Navigate to the folder where the project files are located.)*
+
+### 2. Create and activate a virtual environment (recommended)
+
+python3 -m venv .venv  
 source .venv/bin/activate
-```
 
-3) Bağımlılıkları kur:  
-```bash
-python -m pip install --upgrade pip
+*(This keeps project dependencies isolated from other Python projects.)*
+
+### 3. Install the required libraries
+
+python -m pip install --upgrade pip  
 python -m pip install streamlit pandas codecarbon
-# requirements.txt varsa alternatif:
-# python -m pip install -r requirements.txt
-```
 
-4) GUI (Streamlit) başlat:  
-```bash
+*(These libraries are used for the GUI, data handling, and energy estimation.)*
+
+If a requirements file exists, you can alternatively run:
+
+python -m pip install -r requirements.txt
+
+### 4. Run the Streamlit GUI
+
 streamlit run gui_app.py
-```
-Tarayıcıda http://localhost:8501 açılır. Kapatmak için Ctrl+C.
 
-5) Algoritma hızlı testi (yalnızca terminal çıktısı):  
-```bash
+*(This starts the graphical interface where experiments can be run interactively.)*
+
+After running the command, open the following address in your browser:
+
+http://localhost:8501
+
+Press **Ctrl+C** in the terminal to stop the application.
+
+### 5. Run a quick algorithm test (terminal output only)
+
 python algorithms.py
-```
 
-6) Tüm deneyler ve tablo çıktısı (benchmark):  
-```bash
+*(This runs a small test to verify that the sorting algorithms work correctly.)*
+
+### 6. Run the full benchmark experiments
+
 python benchmark.py
-```
-## Hızlı düzeltme: codecarbon eksik hatası
-GUI çalıştırırken `ModuleNotFoundError: codecarbon` alırsan, proje klasöründe venv açıkken şu komutları sırayla çalıştır:
-```bash
-source .venv/bin/activate   # açıksa sorun olmaz
-ppython -m pip install --upgrade pip
-python -m pip install codecarbon
+
+*(This executes all experiments and prints the results in the terminal.)*
+
+## Quick Fix: CodeCarbon Error
+
+If you encounter the following error while running the GUI:
+
+ModuleNotFoundError: codecarbon
+
+run the following commands:
+
+source .venv/bin/activate  
+python -m pip install --upgrade pip  
+python -m pip install codecarbon  
 streamlit run gui_app.py
-```
+
+*(This installs the missing library and restarts the GUI.)*
+
+## Author
+
+**Leyla Erdemir**  
+Software Engineering Student
